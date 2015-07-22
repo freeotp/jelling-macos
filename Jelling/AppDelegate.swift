@@ -22,6 +22,7 @@ import CoreBluetooth
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, CBPeripheralManagerDelegate {
+    private let NAME = NSHost.currentHost().localizedName!
     private let VERSION = NSBundle.mainBundle().infoDictionary!["CFBundleShortVersionString"]! as! String
     private let STRING_VERSION = NSLocalizedString("Version %@", comment: "")
     private let STRING_ABOUT = NSLocalizedString("About Jelling", comment: "")
@@ -121,8 +122,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, CBPeripheralManagerDelegate 
 
     func peripheralManagerDidUpdateState(peripheral: CBPeripheralManager) {
         switch peripheral.state {
-        case .PoweredOn: peripheral.startAdvertising([CBAdvertisementDataServiceUUIDsKey: [svc.UUID!]])
-        default: peripheral.stopAdvertising()
+        case .PoweredOn:
+            peripheral.startAdvertising([
+                CBAdvertisementDataServiceUUIDsKey: [svc.UUID!],
+                CBAdvertisementDataLocalNameKey: NAME,
+            ])
+
+        default:
+            peripheral.stopAdvertising()
         }
     }
 
